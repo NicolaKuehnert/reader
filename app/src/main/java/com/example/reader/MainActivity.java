@@ -16,17 +16,7 @@ public class MainActivity extends AppCompatActivity {
         setContentView(R.layout.activity_main);
     }
 
-    public void enterMessage(View view){
-
-        EditText text = findViewById(R.id.editText);
-        String message = text.getText().toString();
-
-        new AlertDialog.Builder(this)
-                .setMessage(message)
-                .setTitle("Titel")
-                .setCancelable(true)
-                .show();
-
+    public void bookshelveClick(View view){
 
     }
 }
