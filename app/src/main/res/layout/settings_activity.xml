@@ -64,9 +64,20 @@
         android:layout_marginStart="10dp"
         android:layout_marginBottom="16dp"
         android:onClick="disconnect"
-        android:text="Button"
+        android:text="@string/disconnect"
         android:visibility="visible"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintStart_toEndOf="@+id/searchButto" />
+
+    <Button
+        android:id="@+id/button3"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="12dp"
+        android:layout_marginBottom="16dp"
+        android:onClick="update"
+        android:text="Update"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintStart_toEndOf="@+id/disconnectButton" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

@@ -6,6 +6,7 @@ import android.bluetooth.BluetoothGattCharacteristic;
 import android.bluetooth.BluetoothGattService;
 import android.bluetooth.BluetoothAdapter;
 import android.bluetooth.BluetoothDevice;
+import android.bluetooth.BluetoothManager;
 import android.content.Context;
 import android.util.Log;
 
@@ -20,6 +21,7 @@ public class BLEConnection {
     protected BluetoothDevice device;
     protected String DeviceName;
     protected String deviceHardwareAddress;
+    private BluetoothGatt bluetoothGatt;
 
     private static final String TAG = "BLE_READER";
 
@@ -33,7 +35,7 @@ public class BLEConnection {
         BA = BluetoothAdapter.getDefaultAdapter();
     }
 
-    private BluetoothGatt bluetoothGatt;
+
 
 
     private final String CHARACTERISTIC_UUID = "6d350151-ab8d-4ab6-9258-078ebda04501";
@@ -44,23 +46,63 @@ public class BLEConnection {
     public final static String ACTION_DATA_AVAILABLE = "com.example.bluetooth.le.ACTION_DATA_AVAILABLE";
     public final static String EXTRA_DATA = "com.example.bluetooth.le.EXTRA_DATA";
 
+    /*
+    Get all bonded devices
+     */
     public void search(){
         scannedDevices = BA.getBondedDevices();
     }
 
-    public void connect(){
+    /*
+    Connect to set device
+    If connected, disconnect and reconnect
+     */
+    public int connect(){
+
+        if(bluetoothGatt != null){
+            disconnect();
+        }
+        if(device == null){
+            return 1;
+        }
 
         bluetoothGatt = device.connectGatt(context, true, gattCallback);
         bluetoothGatt.discoverServices();
+        return 0;
+
 
     }
 
+    /*
+    Disconnect GATT from device
+     */
     public void disconnect(){
         if (bluetoothGatt == null) {
             return;
         }
         bluetoothGatt.close();
         bluetoothGatt = null;
+
+    }
+
+    /*
+    Update the characteristic and write it to the server
+     */
+    public void sendUpdate(String message){
+        if(bluetoothGatt == null){
+            return;
+        }
+        BluetoothGattService ser = bluetoothGatt.getService(UUID.fromString(SERVICE_UUID));
+        if(ser == null){
+            broadcastUpdate("service not found");
+            return;
+        }
+        BluetoothGattCharacteristic chara = ser.getCharacteristic(UUID.fromString(CHARACTERISTIC_UUID));
+        chara.setValue(message);
+        bluetoothGatt.writeCharacteristic(chara);
+        broadcastUpdate("Update send: " + message);
+
+
 
     }
 
@@ -77,7 +119,7 @@ public class BLEConnection {
         @Override
         public void onConnectionStateChange(BluetoothGatt gatt, int status, int newState){
             broadcastUpdate(ACTION_GATT_CONNECTED);
-            bluetoothGatt.discoverServices();
+            gatt.discoverServices();
         }
 
         @Override

@@ -13,6 +13,7 @@ import android.bluetooth.BluetoothAdapter;
 import android.bluetooth.BluetoothDevice;
 
 import android.content.Intent;
+import android.util.Log;
 import android.view.View;
 
 import android.widget.AdapterView;
@@ -31,6 +32,7 @@ public class settings extends AppCompatActivity {
 
     ListView lv;
     ArrayList LeDevices;
+    private static final String TAG = "BLE_READER";
 
 
     BLEConnection bleConnection;
@@ -70,7 +72,11 @@ public class settings extends AppCompatActivity {
                                 bleConnection.deviceHardwareAddress = bleConnection.device.getAddress(); // MAC address
 
 
-                                bleConnection.connect();
+                                int status = bleConnection.connect();
+                                if(status != 0){
+                                    Log.i(TAG, "Error connecting");
+                                }
+
                             }
 
                         }
@@ -140,6 +146,10 @@ public class settings extends AppCompatActivity {
     public void disconnect(View v){
         bleConnection.disconnect();
 
+    }
+
+    public void update(View v){
+        bleConnection.sendUpdate("Hello World!");
     }
 
 }
